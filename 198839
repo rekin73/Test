@@ -1,0 +1,51 @@
+<?php
+
+$liczby = [];
+$dni = [];
+
+function check($conn, $sql){
+  if ($conn->query($sql) === TRUE) {
+    echo "<br>SUKCES:   ".$sql."<br><br>";
+  }
+  else {
+    echo "<br>Błąd: " . $conn->error;
+  }
+}
+
+//CONNECT DATABASE
+$conn = mysqli_connect("localhost", "root", "", "spr");
+
+if ($conn->connect_error) {
+  die("Connection failed: " . $conn->connect_error);
+}
+
+$sql = "SELECT * FROM tydzien";
+if($result = mysqli_query($conn, $sql)){
+
+  if(mysqli_num_rows($result) > 0){
+
+    while($row = mysqli_fetch_array($result)){
+          // echo $row['dzien']. ": " . $row['ilosc']. "<br>";
+          array_push($liczby,$row['ilosc']);
+          array_push($dni,$row['dzien']);
+    }
+  }
+}
+
+
+header("Content-type: image/jpeg");
+$rysunek = imagecreate(800,800) or die("Biblioteka graficzna nops");
+
+$kolorbialy = imagecolorallocate ($rysunek, 255,255,255);
+$kolorczarny = imagecolorallocate ($rysunek, 0, 0, 0);
+imagefill($rysunek, 0,0, $kolorbialy);
+
+for($i = 0; $i < 7; $i++) {
+    $kolorslupka = imagecolorallocate ($rysunek, 25*$i, 25*$i, 0);
+    imagefilledrectangle ($rysunek, $i*90 ,180 - $liczby[$i]*10 , $i * 90 + 30, 289, $kolorslupka);
+    imagestring ($rysunek, 0 , $i*90  , 290, $dni[$i].": ".$liczby[$i], $kolorczarny);
+}
+imagejpeg($rysunek);
+
+
+?>

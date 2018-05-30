@@ -1,0 +1,90 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+
+  <h1>Który dzien tygodnia lubisz najbardziej?</h1>
+  <form action="" method="GET">
+  <input type="radio" name="dzien" value="poniedzialek">Poniedziałek
+  <input type="radio" name="dzien" value="wtorek">Wtorek
+  <input type="radio" name="dzien" value="sroda">Środa
+  <input type="radio" name="dzien" value="czwartek">Czwartek
+  <input type="radio" name="dzien" value="piatek">Piątek
+  <input type="radio" name="dzien" value="sobota">Sobota
+  <input type="radio" name="dzien" value="niedziela">Niedziela
+  <input type="submit" value="Wyslij">
+  </form>
+
+
+<?php
+
+function check($conn, $sql){
+  if ($conn->query($sql) === TRUE) {
+    //echo "<br>SUKCES:   ".$sql."<br><br>";
+    echo "<br>";
+  }
+  else {
+    echo "<br>Błąd: " . $conn->error;
+  }
+}
+
+
+//CONNECT DATABASE
+$conn = mysqli_connect("localhost", "root", "", "spr");
+
+if ($conn->connect_error) {
+  die("Connection failed: " . $conn->connect_error);
+}
+// echo "Connected successfully<br>";
+
+// $sql = "INSERT INTO tydzien (id, dzien, ilosc)
+// VALUES ('7', 'niedziela', '0')";
+// check($conn, $sql);
+
+$sql = "SELECT * FROM tydzien";
+if($result = mysqli_query($conn, $sql) && false){
+
+  if(mysqli_num_rows($result) > 0){
+    echo '<h1>Który dzien tygodnia lubisz najbardziej?</h1>';
+    echo '<form action="" method="GET">';
+
+
+
+    while($row = mysqli_fetch_array($result)){
+      $temp = $row['dzien'];
+
+      echo '<input type="radio" name="dzien" value="'.$temp.'">';
+          // echo $row['dzien']. ": " . $row['ilosc']. "<br>";
+          echo $temp;
+    }
+    echo '<input type="submit" value="Wyslij">';
+    echo "</form>";
+  }
+}
+
+
+if(isset($_GET['dzien']))
+{
+  $wybrany=$_GET['dzien'];
+  // echo $wybrany;
+  $sql = "UPDATE tydzien SET ilosc = ilosc + 1 WHERE dzien = '$wybrany'";
+  check($conn, $sql);
+
+
+}
+
+
+$conn -> close();
+
+?>
+<br><br><br>
+<img src="graph.php" alt="">
+
+
+</body>
+</html>
